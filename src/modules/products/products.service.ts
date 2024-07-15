@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductRepository } from '../database/repositories/product.repository';
+import { GetProductByBarcodQueryDto } from './dto/get-product-by-barcode.dto';
 
 @Injectable()
 export class ProductService {
@@ -45,13 +46,23 @@ export class ProductService {
     });
   }
 
-  findOneByBarcode(barCode: string, userId: string) {
-    return this.productRepository.findUnique({
+  async findOneByBarcodeAndSum(barCode: string, userId: string, query: GetProductByBarcodQueryDto) {
+    const quantity = query.quantity
+
+    const product = await this.productRepository.findUnique({
       where: {
         barCode,
         userId
       }
     });
+
+    const amount = product.value * quantity
+
+    return {
+      product,
+      amount,
+      quantity: Number(quantity)
+    }
   }
 
   update(id: string, userId: string, updateProductDto: UpdateProductDto) {

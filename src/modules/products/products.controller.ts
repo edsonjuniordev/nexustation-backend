@@ -1,12 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { ProductService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { IsActiveUserId } from '../decorators/is.active.user.id';
+import { GetProductByBarcodQueryDto } from './dto/get-product-by-barcode.dto';
 
 @Controller('products')
 export class ProductController {
-  constructor(private readonly productService: ProductService) {}
+  constructor(private readonly productService: ProductService) { }
 
   @Post()
   create(
@@ -27,8 +28,8 @@ export class ProductController {
   }
 
   @Get('barcode/:barCode')
-  findOneByBarcode(@Param('barCode') barCode: string, @IsActiveUserId() userId: string) {
-    return this.productService.findOneByBarcode(barCode, userId);
+  findOneByBarcodeAndSum(@Param('barCode') barCode: string, @IsActiveUserId() userId: string, @Query() query: GetProductByBarcodQueryDto) {
+    return this.productService.findOneByBarcodeAndSum(barCode, userId, query);
   }
 
   @Patch(':id')
